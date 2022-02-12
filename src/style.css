@@ -1,0 +1,50 @@
+/**
+ * Fix user-agent
+ */
+
+ * {
+  box-sizing: border-box;
+}
+
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+/**
+ * Canvas
+ */
+
+.whiteboard {
+  width: 100%;
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  top: 75px;
+}
+
+#toolbar-container{
+  display: flex;
+  flex-direction: row;
+  height: 75px;
+}
+
+.color-buttons {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.color-button {
+  display: inline-block;
+  height: 75px;
+  width: 75px;
+}
+
+.black { background-color: black; }
+.red { background-color: red; }
+.green { background-color: green; }
+.blue { background-color: blue; }
+.yellow { background-color: yellow; }
