@@ -57,8 +57,7 @@
 
   function onMouseDown(e){
     drawing = true;
-    //current.x = e.clientX||e.touches[0].clientX;
-    //current.y = e.clientY||e.touches[0].clientY;
+
     mouseX = e.clientX||e.touches[0].clientX;
     mouseY = e.clientY||e.touches[0].clientY;
 
@@ -83,8 +82,6 @@
     if (!drawing) { return; }
     drawLine(mouseX, mouseY, e.clientX||e.touches[0].clientX, e.clientY||e.touches[0].clientY, color, true);
 
-    //current.x = e.clientX||e.touches[0].clientX;
-    //current.y = e.clientY||e.touches[0].clientY;
     mouseX = e.clientX||e.touches[0].clientX;
     mouseY = e.clientY||e.touches[0].clientY;
 
@@ -132,7 +129,6 @@
 
   // undo button
   undoButton.addEventListener('click', () => {
-    //points.pop(); //tpyically pops an end point
     removeLastLine();
     redrawAll();
   })
@@ -147,7 +143,6 @@
       }
       points.pop();
     }
-    //redrawAll();
   }
 
   function redrawAll(){
@@ -162,12 +157,9 @@
 
       if(context.lineWidth != point.size){
         context.lineWidth = point.size;
-        //begin = true;
       }
       if(context.strokeStyle != point.color){
         context.strokeStyle = point.color;
-        //begin=true;
-
       }
       if ( point.mode == "begin" || begin ) {
         context.beginPath();
@@ -187,10 +179,10 @@
   saveButton.addEventListener('click',  () => {
     try { 
       var image = canvas.toDataURL();
-      var tmpLink = document.createElement( 'a' );
-      tmpLink.download = 'image.png'; // set the name of the download file 
-      tmpLink.href = image;  
-      tmpLink.click();  
+      var t = document.createElement( 'a' );
+      t.download = 'image.png'; 
+      t.href = image;  
+      t.click();  
     } catch (e) { 
       console.log(e.toString());
     }
