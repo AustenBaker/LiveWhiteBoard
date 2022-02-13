@@ -39,20 +39,31 @@
 
   socket.on('drawing', onDrawingEvent);
 
-  function drawLine(x0, y0 , x1, y1, color, emit){
+  function drawLine(x0, y0 , x1, y1, color, width, emit){
     y0 = y0;
     y1 = y1;
+
+    context.beginPath();
+    context.moveTo(x0, y0);
+    context.lineTo(x1, y1);
+    context.strokeStyle = color;
+    context.lineWidth = width;
+    context.lineCap = "round";
+    context.stroke();
+    context.closePath();
 
     if (!emit) { return; }
     var w = canvas.width;
     var h = canvas.height;
 
+    //emit line to server
     socket.emit('drawing', {
       x0: x0 / w,
       y0: y0 / h,
       x1: x1 / w,
       y1: y1 / h,
-      color: color
+      color: color,
+      width: width
     });
   }
 
@@ -64,6 +75,8 @@
 
     context.beginPath();
     context.moveTo(mouseX, mouseY);
+
+    drawLine(mouseX, mouseY, e.clientX||e.touches[0].clientX, e.clientY||e.touches[0].clientY, color, lineWidth.value, true);
 
     points.push({x:mouseX, y:mouseY, size:lineWidth.value, color:color, mode:"begin" });
 
@@ -81,7 +94,7 @@
 
   function onMouseMove(e){
     if (!drawing) { return; }
-    drawLine(mouseX, mouseY, e.clientX||e.touches[0].clientX, e.clientY||e.touches[0].clientY, color, true);
+    drawLine(mouseX, mouseY, e.clientX||e.touches[0].clientX, e.clientY||e.touches[0].clientY, color, lineWidth.value, true);
 
     mouseX = e.clientX||e.touches[0].clientX;
     mouseY = e.clientY||e.touches[0].clientY;
@@ -123,7 +136,7 @@
   function onDrawingEvent(data){
     var w = canvas.width;
     var h = canvas.height;
-    drawLine(data.x0 * w, data.y0 * h, data.x1 * w, data.y1 * h, data.color);
+    drawLine(data.x0 * w, data.y0 * h, data.x1 * w, data.y1 * h, data.color, data.width);
   }
 
 
