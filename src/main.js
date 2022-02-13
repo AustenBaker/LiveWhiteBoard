@@ -136,7 +136,6 @@
   function removeLastLine() {
     points.pop();
     for(var i=points.length-1; i >= 0; i--){
-      console.log(points[i]);
       if(points[i].mode == "begin"){ 
         points.pop();
         break
@@ -146,7 +145,6 @@
   }
 
   function redrawAll(){
-    console.log(points);
     context.clearRect(0,0,canvas.width,canvas.height);
     context.lineCap = "round";
     if(points.length==0){return;}
