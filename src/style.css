@@ -5,6 +5,15 @@
  * {
   box-sizing: border-box;
 }
+svg{
+  cursor: pointer;
+  stroke: grey;
+  fill: grey;
+}
+svg:hover{
+  stroke: black;
+  fill: black;
+}
 
 html, body {
   height: 100%;

@@ -5,12 +5,14 @@
   var socket = io();
   var canvas = document.getElementsByClassName('whiteboard')[0];
   var colorsButtons = document.getElementsByClassName('color-button');
+  var saveButton = document.getElementById('save-button');
   var lineWidthInput = document.getElementById('line-width');
   var context = canvas.getContext('2d');
 
   var current = {
     color: 'black'
   };
+
   var drawing = false;
 
   //Desktops
@@ -25,26 +27,31 @@
   canvas.addEventListener('touchcancel', onMouseUp, false);
   canvas.addEventListener('touchmove', throttle(onMouseMove, 10), false);
 
-  for (var i = 0; i < colorsButtons.length; i++){
-    colorsButtons[i].addEventListener('click', onColorUpdate, false);
-  }
-
-  // temp.addEventListener('???', onLineWidthUpdate, false)
-
-  socket.on('drawing', onDrawingEvent);
 
   window.addEventListener('resize', onResize, false);
   onResize();
 
+  for (var i = 0; i < colorsButtons.length; i++){
+    colorsButtons[i].addEventListener('click', onColorUpdate, false);
+  }
+
+  socket.on('drawing', onDrawingEvent);
 
   function drawLine(x0, y0 , x1, y1, color, emit){
     y0 = y0 - 75;
     y1 = y1 - 75;
     context.beginPath();
     context.moveTo(x0, y0);
+
+    
+    //context.arc(x1, y1, lineWidthInput.value, 0, 2*Math.PI, false);
+    //context.fillStyle = color;
+    //context.fill();
+
     context.lineTo(x1, y1);
     context.strokeStyle = color;
     context.lineWidth = lineWidthInput.value;
+    context.lineCap = "round";
     context.stroke();
     context.closePath();
 
@@ -67,10 +74,9 @@
     current.y = e.clientY||e.touches[0].clientY;
   }
 
-  function onMouseUp(e){
+  function onMouseUp(){
     if (!drawing) { return; }
     drawing = false;
-   // drawLine(current.x, current.y, current.color, true);
   }
 
   function onMouseMove(e){
@@ -81,7 +87,6 @@
   }
 
   function onColorUpdate(e){
-    console.log(current.color);
     current.color = e.target.className.split(' ')[1];
   }
 
@@ -104,10 +109,25 @@
     drawLine(data.x0 * w, data.y0 * h, data.x1 * w, data.y1 * h, data.color);
   }
 
+  // save button 
+  saveButton.addEventListener('click',  () => {
+    try { 
+      var image = canvas.toDataURL();
+      var tmpLink = document.createElement( 'a' );
+      tmpLink.download = 'image.png'; // set the name of the download file 
+      tmpLink.href = image;  
+      tmpLink.click();  
+    } catch (e) { 
+      console.log(e.toString());
+    }
+  });
+
   // make the canvas fill its parent
   function onResize() {
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight -75;
+    context.fillStyle = "white";
+    context.fillRect(0, 0, canvas.width, canvas.height);
   }
 
 })();
