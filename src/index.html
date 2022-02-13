@@ -4,26 +4,31 @@
   <meta charset="UTF-8">
   <title>Socket.IO whiteboard</title>
   <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="tooltip.css">
 </head>
 <body>
   <canvas class="whiteboard" ></canvas>
 
   <div id="toolbar-container">  
-    <div class="color-buttons">
-      <div class="color-button black"></div>
-      <div class="color-button red"></div>
-      <div class="color-button green"></div>
-      <div class="color-button blue"></div>
-      <div class="color-button yellow"></div>
-    </div>
-
-    <div>
+    <div id="range-container">
+      <span class="tooltiptext">Brush Size</span>
       <input type="range" id="line-width" name="line-width"
-             min="1" max="40">
-      <label for="line-width">Brush Size</label>
+        min="1" value="5" max="50" onInput="rangevalue.value=value" >
+      <output id="rangevalue">5</output>
     </div>
 
+    <div id="color-container">
+      <span class="tooltiptext">Change Color</span>
+      <input type="color" id="fav-color" name="fav-color" value="#000000">
+    </div>
+
+    <div id="undo-button">
+      <span class="tooltiptext">Undo Last Stroke</span>
+      <svg width="75" height="75" viewBox="0 0 50 50" fill="none" xmlns="http://www.w3.org/2000/svg"><line x1="2" x2="2" y2="50" stroke-width="4"/><line x1="48" x2="48" y2="50" stroke-width="4"/><line y1="2" x2="50" y2="2"  stroke-width="4"/><line y1="48" x2="50" y2="48" stroke-width="4"/><line x1="18" y1="36" x2="38" y2="36"  stroke-width="4"/><line x1="36" y1="36" x2="36" y2="14" stroke-width="4"/><line x1="16" y1="14" x2="38" y2="14"  stroke-width="4"/><path d="M8 14L16.25 7.93782V20.0622L8 14Z" /></svg>  
+    </div>
+    
     <div id="save-button">
+      <span class="tooltiptext">Download</span>
       <svg width="75" height="75" viewBox="0 0 50 50" ><line x1="2" x2="2" y2="50" stroke-width="4"/><line x1="48" x2="48" y2="50" stroke-width="4"/><line y1="2" x2="50" y2="2" stroke-width="4"/><line x1="40" y1="30" x2="40" y2="42" stroke-width="4"/><line y1="48" x2="50" y2="48" stroke-width="4"/><line x1="10" y1="30" x2="10" y2="42" stroke-width="4"/><line x1="12" y1="40" x2="38" y2="40" stroke-width="4"/><line x1="25" y1="26" x2="25" y2="8" stroke-width="4"/><path d="M25 34L17.2058 25.75H32.7942L25 34Z"/></svg>
     </div>
   </div>

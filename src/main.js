@@ -4,56 +4,43 @@
 
   var socket = io();
   var canvas = document.getElementsByClassName('whiteboard')[0];
-  var colorsButtons = document.getElementsByClassName('color-button');
+  var colorInput = document.getElementById('fav-color');
   var saveButton = document.getElementById('save-button');
-  var lineWidthInput = document.getElementById('line-width');
+  var undoButton = document.getElementById('undo-button');
+  var lineWidth = document.getElementById('line-width');
   var context = canvas.getContext('2d');
 
-  var current = {
-    color: 'black'
-  };
+  var color = '#000000';
+  var lastX, lastY;
+  var mouseX, mouseY
+  var points = [];
 
   var drawing = false;
-
+  
   //Desktops
   canvas.addEventListener('mousedown', onMouseDown, false);
   canvas.addEventListener('mouseup', onMouseUp, false);
   canvas.addEventListener('mouseout', onMouseUp, false);
-  canvas.addEventListener('mousemove', throttle(onMouseMove, 10), false);
+  canvas.addEventListener('mousemove', throttle(onMouseMove, 3), false);
   
   //Touch support for mobile devices
   canvas.addEventListener('touchstart', onMouseDown, false);
   canvas.addEventListener('touchend', onMouseUp, false);
   canvas.addEventListener('touchcancel', onMouseUp, false);
-  canvas.addEventListener('touchmove', throttle(onMouseMove, 10), false);
+  canvas.addEventListener('touchmove', throttle(onMouseMove, 30), false);
 
 
   window.addEventListener('resize', onResize, false);
   onResize();
 
-  for (var i = 0; i < colorsButtons.length; i++){
-    colorsButtons[i].addEventListener('click', onColorUpdate, false);
-  }
+  //update color on change
+  colorInput.addEventListener('change', () => color = colorInput.value)
 
   socket.on('drawing', onDrawingEvent);
 
   function drawLine(x0, y0 , x1, y1, color, emit){
-    y0 = y0 - 75;
-    y1 = y1 - 75;
-    context.beginPath();
-    context.moveTo(x0, y0);
-
-    
-    //context.arc(x1, y1, lineWidthInput.value, 0, 2*Math.PI, false);
-    //context.fillStyle = color;
-    //context.fill();
-
-    context.lineTo(x1, y1);
-    context.strokeStyle = color;
-    context.lineWidth = lineWidthInput.value;
-    context.lineCap = "round";
-    context.stroke();
-    context.closePath();
+    y0 = y0;
+    y1 = y1;
 
     if (!emit) { return; }
     var w = canvas.width;
@@ -70,26 +57,56 @@
 
   function onMouseDown(e){
     drawing = true;
-    current.x = e.clientX||e.touches[0].clientX;
-    current.y = e.clientY||e.touches[0].clientY;
+    //current.x = e.clientX||e.touches[0].clientX;
+    //current.y = e.clientY||e.touches[0].clientY;
+    mouseX = e.clientX||e.touches[0].clientX;
+    mouseY = e.clientY||e.touches[0].clientY;
+
+    context.beginPath();
+    context.moveTo(mouseX, mouseY);
+
+    points.push({x:mouseX, y:mouseY, size:lineWidth.value, color:color, mode:"begin" });
+
+    lastX=mouseX;
+    lastY=mouseY;
   }
 
   function onMouseUp(){
     if (!drawing) { return; }
+    points.push({ x:mouseX, y:mouseY, size:lineWidth.value, color:color, mode:"end" });
     drawing = false;
   }
 
+
+
   function onMouseMove(e){
     if (!drawing) { return; }
-    drawLine(current.x, current.y, e.clientX||e.touches[0].clientX, e.clientY||e.touches[0].clientY, current.color, true);
-    current.x = e.clientX||e.touches[0].clientX;
-    current.y = e.clientY||e.touches[0].clientY;
+    drawLine(mouseX, mouseY, e.clientX||e.touches[0].clientX, e.clientY||e.touches[0].clientY, color, true);
+
+    //current.x = e.clientX||e.touches[0].clientX;
+    //current.y = e.clientY||e.touches[0].clientY;
+    mouseX = e.clientX||e.touches[0].clientX;
+    mouseY = e.clientY||e.touches[0].clientY;
+
+    context.lineTo(mouseX,mouseY);
+    context.strokeStyle = color;
+    context.lineWidth = lineWidth.value;
+    context.lineCap = "round";
+    context.stroke();     
+    lastX=mouseX;
+    lastY=mouseY;
+
+    points.push({
+      x: mouseX,
+      y: mouseY,
+      size: lineWidth.value,
+      color: color,
+      mode: "draw"
+    });
   }
 
-  function onColorUpdate(e){
-    current.color = e.target.className.split(' ')[1];
-  }
 
+  
   // limit the number of events per second
   function throttle(callback, delay) {
     var previousCall = new Date().getTime();
@@ -103,11 +120,68 @@
     };
   }
 
+
+
   function onDrawingEvent(data){
     var w = canvas.width;
     var h = canvas.height;
     drawLine(data.x0 * w, data.y0 * h, data.x1 * w, data.y1 * h, data.color);
   }
+
+
+
+  // undo button
+  undoButton.addEventListener('click', () => {
+    //points.pop(); //tpyically pops an end point
+    removeLastLine();
+    redrawAll();
+  })
+
+  function removeLastLine() {
+    points.pop();
+    for(var i=points.length-1; i >= 0; i--){
+      console.log(points[i]);
+      if(points[i].mode == "begin"){ 
+        points.pop();
+        break
+      }
+      points.pop();
+    }
+    //redrawAll();
+  }
+
+  function redrawAll(){
+    console.log(points);
+    context.clearRect(0,0,canvas.width,canvas.height);
+    context.lineCap = "round";
+    if(points.length==0){return;}
+
+    for(var i=0; i < points.length; i++){
+      var point = points[i];
+      var begin = false;
+
+      if(context.lineWidth != point.size){
+        context.lineWidth = point.size;
+        //begin = true;
+      }
+      if(context.strokeStyle != point.color){
+        context.strokeStyle = point.color;
+        //begin=true;
+
+      }
+      if ( point.mode == "begin" || begin ) {
+        context.beginPath();
+        context.moveTo( point.x, point.y );
+      }
+      context.lineTo( point.x, point.y );
+      if ( point.mode == "end" || ( i == points.length - 1) ) {
+        context.stroke();
+      }
+    }
+    context.stroke();
+  }
+
+
 
   // save button 
   saveButton.addEventListener('click',  () => {
@@ -122,10 +196,12 @@
     }
   });
 
+
+
   // make the canvas fill its parent
   function onResize() {
     canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight -75;
+    canvas.height = window.innerHeight - 75;
     context.fillStyle = "white";
     context.fillRect(0, 0, canvas.width, canvas.height);
   }
