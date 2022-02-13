@@ -7,6 +7,7 @@
   var colorInput = document.getElementById('fav-color');
   var saveButton = document.getElementById('save-button');
   var undoButton = document.getElementById('undo-button');
+  var clearButton = document.getElementById('clear-button');
   var lineWidth = document.getElementById('line-width');
   var context = canvas.getContext('2d');
 
@@ -186,6 +187,13 @@
     }
   });
 
+
+
+  // clear button
+  clearButton.addEventListener('click', () => {
+    points = [];
+    redrawAll();
+  })
 
 
   // make the canvas fill its parent

@@ -81,3 +81,25 @@
   visibility: visible;
   opacity: 1;
 }
+
+
+#clear-button .tooltiptext{
+  visibility: hidden;
+  width: 115px;
+  background-color: black;
+  color: white;
+  border-radius: 6px;
+  text-align: center;
+  padding: 5px 0;
+  position: absolute;
+  z-index: 1;
+  bottom: 102%;
+  font-size: 16px;
+  left: -20px;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+#clear-button:hover .tooltiptext{
+  visibility: visible;
+  opacity: 1;
+}

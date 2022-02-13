@@ -88,6 +88,13 @@ svg:hover{
   width: 75px;
 }
 
+/* Clear Button */
+#clear-button{
+  position: absolute;
+  right: 150px;
+  height: 75px;
+  width: 75px;
+}
 
 
 /* Slider */
