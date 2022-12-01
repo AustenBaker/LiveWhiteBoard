@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Socket.IO whiteboard</title>
+  <title>Whiteboard</title>
   <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="tooltip.css">
 </head>
@@ -10,33 +10,34 @@
   <canvas class="whiteboard" ></canvas>
 
   <div id="toolbar-container">  
-    <div id="range-container">
-      <span class="tooltiptext">Brush Size</span>
-      <input type="range" id="line-width" name="line-width"
-        min="1" value="5" max="50" onInput="rangevalue.value=value" >
-      <output id="rangevalue">5</output>
+    <div id="brush-container">
+      <div id="color-container">
+        <input type="color" id="brush-color" title="Color" name="brush-color" value="#0000ff">
+      </div>
+
+      <div id="range-container">
+        <output id="brushsizevalue">6</output>
+        <input type="range" id="brush-width" name="brush-width" title="Size"
+          min="1" value="6" max="50" onInput="brushsizevalue.value=value" >
+      </div>
     </div>
 
-    <div id="color-container">
-      <span class="tooltiptext">Change Color</span>
-      <input type="color" id="fav-color" name="fav-color" value="#000000">
+    <div id="button-container">
+      <button type="button" title="Clear Canvas" id="clear-button">
+        <svg width="75" height="75" viewBox="0 0 50 50" fill="none" xmlns="http://www.w3.org/2000/svg"><line x1="1.58579" y1="48.2548" x2="48.2548" y2="1.58578" stroke-width="4"/><line x1="48.2548" y1="48.0833" x2="1.58578" y2="1.4142" stroke-width="4"/><line x1="2" x2="2" y2="50" stroke-width="4"/><line x1="48" x2="48" y2="50" stroke-width="4"/><line y1="2" x2="50" y2="2" stroke-width="4"/><line y1="48" x2="50" y2="48" stroke-width="4"/></svg>
+      </button>
+  
+      <button type="button" title="Undo Last" id="undo-button">
+        <svg width="75" height="75" viewBox="0 0 50 50" fill="none" xmlns="http://www.w3.org/2000/svg"><line x1="2" x2="2" y2="50" stroke-width="4"/><line x1="48" x2="48" y2="50" stroke-width="4"/><line y1="2" x2="50" y2="2"  stroke-width="4"/><line y1="48" x2="50" y2="48" stroke-width="4"/><line x1="18" y1="36" x2="38" y2="36"  stroke-width="4"/><line x1="36" y1="36" x2="36" y2="14" stroke-width="4"/><line x1="16" y1="14" x2="38" y2="14"  stroke-width="4"/><path d="M8 14L16.25 7.93782V20.0622L8 14Z" /></svg>  
+      </button>
+      
+      <button type="button" title="Save Image" id="save-button">
+        <svg width="75" height="75" viewBox="0 0 50 50" ><line x1="2" x2="2" y2="50" stroke-width="4"/><line x1="48" x2="48" y2="50" stroke-width="4"/><line y1="2" x2="50" y2="2" stroke-width="4"/><line x1="40" y1="30" x2="40" y2="42" stroke-width="4"/><line y1="48" x2="50" y2="48" stroke-width="4"/><line x1="10" y1="30" x2="10" y2="42" stroke-width="4"/><line x1="12" y1="40" x2="38" y2="40" stroke-width="4"/><line x1="25" y1="26" x2="25" y2="8" stroke-width="4"/><path d="M25 34L17.2058 25.75H32.7942L25 34Z"/></svg>
+      </button>
     </div>
 
-    <div id="clear-button">
-      <span class="tooltiptext">Clear Canvas</span>
-      <svg width="75" height="75" viewBox="0 0 50 50" fill="none" xmlns="http://www.w3.org/2000/svg"><line x1="1.58579" y1="48.2548" x2="48.2548" y2="1.58578" stroke-width="4"/><line x1="48.2548" y1="48.0833" x2="1.58578" y2="1.4142" stroke-width="4"/><line x1="2" x2="2" y2="50" stroke-width="4"/><line x1="48" x2="48" y2="50" stroke-width="4"/><line y1="2" x2="50" y2="2" stroke-width="4"/><line y1="48" x2="50" y2="48" stroke-width="4"/></svg>
-    </div>
-
-    <div id="undo-button">
-      <span class="tooltiptext">Undo Last Stroke</span>
-      <svg width="75" height="75" viewBox="0 0 50 50" fill="none" xmlns="http://www.w3.org/2000/svg"><line x1="2" x2="2" y2="50" stroke-width="4"/><line x1="48" x2="48" y2="50" stroke-width="4"/><line y1="2" x2="50" y2="2"  stroke-width="4"/><line y1="48" x2="50" y2="48" stroke-width="4"/><line x1="18" y1="36" x2="38" y2="36"  stroke-width="4"/><line x1="36" y1="36" x2="36" y2="14" stroke-width="4"/><line x1="16" y1="14" x2="38" y2="14"  stroke-width="4"/><path d="M8 14L16.25 7.93782V20.0622L8 14Z" /></svg>  
-    </div>
-    
-    <div id="save-button">
-      <span class="tooltiptext">Download</span>
-      <svg width="75" height="75" viewBox="0 0 50 50" ><line x1="2" x2="2" y2="50" stroke-width="4"/><line x1="48" x2="48" y2="50" stroke-width="4"/><line y1="2" x2="50" y2="2" stroke-width="4"/><line x1="40" y1="30" x2="40" y2="42" stroke-width="4"/><line y1="48" x2="50" y2="48" stroke-width="4"/><line x1="10" y1="30" x2="10" y2="42" stroke-width="4"/><line x1="12" y1="40" x2="38" y2="40" stroke-width="4"/><line x1="25" y1="26" x2="25" y2="8" stroke-width="4"/><path d="M25 34L17.2058 25.75H32.7942L25 34Z"/></svg>
-    </div>
   </div>
+
 
   <script src="/socket.io/socket.io.js"></script>
   <script src="/main.js"></script>
