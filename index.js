@@ -6,10 +6,10 @@ const port = process.env.PORT || 3000;
 
 app.use(express.static(__dirname + '/src'));
 
-function onConnection(socket){
-  socket.on('drawing', (data) => socket.broadcast.emit('drawing', data));
-}
-
-io.on('connection', onConnection);
+io.on("connection", (socket) => {
+  socket.on('drawing', (data) => {
+    io.emit('drawing', data);
+  });
+})
 
 http.listen(port, () => console.log('listening on port ' + port));
